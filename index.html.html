@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warfarin Save</title>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 650px; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #0056b3; text-align: center; }
+        .form-group, fieldset { margin-bottom: 20px; }
+        fieldset { border: 1px solid #ccc; border-radius: 5px; padding: 15px; }
+        legend { font-weight: bold; color: #333; padding: 0 10px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
+        input[type="date"], input[type="number"], input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
+        .date-container { display: flex; gap: 20px; align-items: flex-end; }
+        .date-item { flex: 1; }
+        .radio-group label, .dose-line span, .inline-controls label { display: inline-block; margin-right: 15px; font-weight: normal; }
+        .dose-line input[type="number"] { width: 80px; display: inline-block; margin: 0 5px; }
+        .dose-line select { width: 180px; display: inline-block; }
+        #incorrect-details { display: none; margin-top: 10px; }
+        #recommendation { margin-top: 10px; padding: 15px; background-color: #e9f7ef; border-left: 5px solid #28a745; border-radius: 5px; min-height: 50px; }
+        .dose-results-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .result-item { flex: 1; min-width: 250px; }
+        .result-item div, #appointmentDuration { font-size: 1.2em; font-weight: bold; color: #0056b3; }
+        .result-item #doseChangePercent.increase { color: #28a745; }
+        .result-item #doseChangePercent.decrease { color: #dc3545; }
+        
+        .inline-controls { display: flex; gap: 30px; align-items: center; }
+        .inline-controls .control-item { display: flex; align-items: center; gap: 8px;}
+        .inline-controls input[type="number"] { width: 70px; }
+
+        .button-group { display: flex; gap: 10px; }
+        .button-group button { flex: 1; padding: 12px; font-size: 1.1em; font-weight: bold; color: #fff; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
+        #getResultButton { background-color: #007bff; }
+        #getResultButton:hover { background-color: #0056b3; }
+        #resetButton { background-color: #dc3545; } /* (ใหม่) สีปุ่มรีเซ็ต */
+        #resetButton:hover { background-color: #c82333; }
+        
+        #summarySection { display: none; margin-top: 20px; }
+        #summaryHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
+        #summaryHeader #copyButton { padding: 5px 15px; font-size: 0.9em; flex: 0 1 auto; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #summaryHeader #copyButton:hover { background-color: #5a6268; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Warfarin Save 📝</h1>
+
+    <form id="warfarinForm" onsubmit="return false;">
+        <fieldset>
+             <legend>ข้อมูลการนัดหมาย</legend>
+            <div class="date-container">
+                <div class="date-item form-group">
+                    <label for="visitDate">วันที่มาโรงพยาบาล:</label>
+                    <input type="date" id="visitDate" name="visitDate">
+                </div>
+                <div class="date-item form-group">
+                    <label for="nextAppointment">วันที่นัดครั้งต่อไป:</label>
+                    <input type="date" id="nextAppointment" name="nextAppointment">
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>ข้อมูล INR และการกินยา</legend>
+            <div class="form-group">
+                <label>การกินยาของผู้ป่วย:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="medicationAdherence" value="ถูกต้อง" checked> กินยาถูกต้อง</label>
+                    <label><input type="radio" name="medicationAdherence" value="ไม่ถูกต้อง"> กินยาไม่ถูกต้อง</label>
+                </div>
+                <div id="incorrect-details"><label for="incorrectReason">ระบุสาเหตุ:</label><textarea id="incorrectReason" rows="2"></textarea></div>
+            </div>
+            <div class="form-group">
+                <label>INR เป้าหมาย:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="targetINR" value="2-3" checked> 2-3</label>
+                    <label><input type="radio" name="targetINR" value="2.5-3.5"> 2.5-3.5</label>
+                    <label><input type="radio" name="targetINR" value="other"> อื่นๆ: <input type="text" id="otherINR" style="width:100px;display:inline-block;" disabled></label>
+                </div>
+            </div>
+            <div class="form-group">
+                 <label for="previousDose">ขนาดยาเดิมที่ได้รับ (mg/wk):</label>
+                 <input type="number" id="previousDose" step="0.1" placeholder="กรอกขนาดยาเดิม">
+            </div>
+            <div class="form-group">
+                <label for="currentINR">INR วันนี้:</label>
+                <input type="number" id="currentINR" step="0.1" placeholder="กรอกค่า INR เป็นตัวเลข">
+            </div>
+        </fieldset>
+        
+        <fieldset>
+            <legend>คำแนะนำตามผล INR</legend>
+            <div id="recommendation"><p>กรุณากรอก INR วันนี้เพื่อดูคำแนะนำ</p></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>การจัดการเพิ่มเติม</legend>
+            <div class="inline-controls">
+                <div class="control-item">
+                    <label><input type="checkbox" id="stopMedCheckbox">หยุดยา</label>
+                    <input type="number" id="stopMedDays" disabled>
+                    <span>วัน</span>
+                </div>
+                <div class="control-item">
+                    <label><input type="checkbox" id="vitKCheckbox">ให้ Vitamin K</label>
+                    <input type="number" id="vitKMg" step="0.1" disabled>
+                    <span>mg</span>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>ขนาดยาแนะนำ</legend>
+            <div class="form-group"><label>ขนาดยา (Strength):</label><div class="radio-group"><label><input type="radio" name="tabletStrength" value="2"> 2 mg</label><label><input type="radio" name="tabletStrength" value="3" checked> 3 mg</label><label><input type="radio" name="tabletStrength" value="5"> 5 mg</label></div></div>
+            <div class="form-group dose-line"><span>กินครั้งละ</span><input type="number" id="dose1_qty" value="1" step="0.5"><span>เม็ด ก่อนนอน</span><select id="dose1_days"><option value="7">ทุกวัน</option><option value="3" selected>จันทร์ พุธ ศุกร์</option><option value="5">จันทร์ ถึง ศุกร์</option><option value="6">จันทร์ ถึง เสาร์</option></select></div>
+            <div class="form-group dose-line"><span>กินครั้งละ</span><input type="number" id="dose2_qty" value="0.5" step="0.5"><span>เม็ด ก่อนนอน</span><select id="dose2_days"><option value="0">- (ไม่แสดงผล)</option><option value="4" selected>วันที่เหลือ</option><option value="2">เสาร์ - อาทิตย์</option><option value="1">อาทิตย์</option></select></div>
+            <div class="dose-results-container"><div class="result-item"><label>ขนาดยาทั้งหมดต่อสัปดาห์:</label><div id="totalDoseResult">0 mg/wk</div></div><div class="result-item"><label>ขนาดยา (เพิ่มขึ้น ลดลง หรือ ไม่เปลี่ยนแปลง):</label><div id="doseChangePercent">- %</div></div></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>ยาที่ต้องใช้ทั้งหมด</legend>
+            <div class="form-group"><label>ระยะเวลาจนถึงนัดถัดไป:</label><div id="appointmentDuration">กรุณาเลือกวันที่นัด</div></div>
+            <div class="form-group"><label>จำนวนยาที่ต้องใช้จนถึงนัดถัดไป:</label><div id="totalTabletsNeeded">- เม็ด</div></div>
+        </fieldset>
+
+        <div class="form-group button-group">
+            <button type="button" id="getResultButton">แสดงผลลัพธ์สรุป</button>
+            <button type="button" id="resetButton">รีเซ็ตข้อมูล</button>
+        </div>
+        <div id="summarySection">
+            <div id="summaryHeader">
+                <label for="summaryOutput">ข้อมูลสรุป:</label>
+                <button type="button" id="copyButton">คัดลอก</button>
+            </div>
+            <textarea id="summaryOutput" rows="15" readonly></textarea>
+        </div>
+    </form>
+</div>
+
+<script>
+    // --- เลือก Elements ทั้งหมด ---
+    const warfarinForm = document.getElementById('warfarinForm');
+    const visitDateInput = document.getElementById('visitDate');
+    const nextAppointmentInput = document.getElementById('nextAppointment');
+    const medicationRadios = document.querySelectorAll('input[name="medicationAdherence"]');
+    const incorrectDetailsDiv = document.getElementById('incorrect-details');
+    const incorrectReasonTextarea = document.getElementById('incorrectReason');
+    const currentINRInput = document.getElementById('currentINR');
+    const targetINRRadios = document.querySelectorAll('input[name="targetINR"]');
+    const recommendationDiv = document.getElementById('recommendation');
+    const otherINRRadio = document.querySelector('input[value="other"]');
+    const otherINRInput = document.getElementById('otherINR');
+    const previousDoseInput = document.getElementById('previousDose');
+    const stopMedCheckbox = document.getElementById('stopMedCheckbox');
+    const stopMedDays = document.getElementById('stopMedDays');
+    const vitKCheckbox = document.getElementById('vitKCheckbox');
+    const vitKMg = document.getElementById('vitKMg');
+    const strengthRadios = document.querySelectorAll('input[name="tabletStrength"]');
+    const dose1QtyInput = document.getElementById('dose1_qty');
+    const dose1DaysSelect = document.getElementById('dose1_days');
+    const dose2QtyInput = document.getElementById('dose2_qty');
+    const dose2DaysSelect = document.getElementById('dose2_days');
+    const totalDoseResultDiv = document.getElementById('totalDoseResult');
+    const doseChangePercentDiv = document.getElementById('doseChangePercent');
+    const appointmentDurationDiv = document.getElementById('appointmentDuration');
+    const totalTabletsNeededDiv = document.getElementById('totalTabletsNeeded');
+    const getResultButton = document.getElementById('getResultButton');
+    const resetButton = document.getElementById('resetButton'); // (ใหม่)
+    const summarySection = document.getElementById('summarySection');
+    const summaryOutput = document.getElementById('summaryOutput');
+    const copyButton = document.getElementById('copyButton');
+
+    // --- ฟังก์ชัน Helper ---
+    function formatNumber(num) {
+        if (num % 1 === 0) { return num.toString(); } 
+        else { return num.toFixed(1); }
+    }
+    
+    // --- ฟังก์ชันคำนวณ ---
+    function updateRecommendation() {
+        const inrValue = parseFloat(currentINRInput.value);
+        const targetRange = document.querySelector('input[name="targetINR"]:checked').value;
+        let recommendationText = 'กรุณากรอก INR วันนี้ให้ถูกต้อง';
+        if (isNaN(inrValue)) { recommendationDiv.innerHTML = `<p>${recommendationText}</p>`; return; }
+        if (targetRange === '2-3') {
+            if (inrValue < 1.5) { recommendationText = '<strong>INR < 1.5:</strong> เพิ่มขนาดยา warfarin ต่อ'; } 
+            else if (inrValue <= 1.9) { recommendationText = '<strong>INR 1.5 - 1.9:</strong> เพิ่มขนาดยา warfarin ต่อสัปดาห์ 5-10%'; } 
+            else if (inrValue <= 3) { recommendationText = '<strong>INR 2-3:</strong> ไม่ปรับเปลี่ยนขนาดยา warfarin'; } 
+            else if (inrValue <= 3.9) { recommendationText = '<strong>INR 3.1- 3.9:</strong> ปรับลดขนาดยา warfarin ต่อสัปดาห์ 5-10%'; } 
+            else if (inrValue <= 4.9) { recommendationText = '<strong>INR 4.0-4.9:</strong> หยุดยา warfarin 1 วัน และลดขนาดยา warfarin ต่อสัปดาห์ 10%'; } 
+            else if (inrValue <= 8.9) { recommendationText = '<strong>INR 5-8.9:</strong> หยุดยา warfarin 1-2 วัน, ลดขนาดยา warfarin ต่อสัปดาห์ 20% และให้ Vitamin K 1-2.5 mg'; } 
+            else { recommendationText = '<strong>INR > 8.9:</strong> หยุดยา warfarin, ลดขนาดยา warfarin ต่อสัปดาห์ 20% และให้ Vitamin K 5-10 mg'; }
+        } else if (targetRange === '2.5-3.5') {
+            if (inrValue < 2) { recommendationText = '<strong>INR < 2:</strong> เพิ่มขนาดยา warfarin ต่อสัปดาห์ 10 - 20%'; } 
+            else if (inrValue <= 2.4) { recommendationText = '<strong>INR 2 - 2.4:</strong> เพิ่มขนาดยา warfarin ต่อสัปดาห์ 5-10%'; } 
+            else if (inrValue <= 3.5) { recommendationText = '<strong>INR 2.5 - 3.5:</strong> ไม่ปรับเปลี่ยนขนาดยา warfarin'; } 
+            else if (inrValue <= 4.4) { recommendationText = '<strong>INR 3.6 - 4.4:</strong> ปรับลดขนาดยา warfarin ต่อสัปดาห์ 5-10%'; } 
+            else if (inrValue <= 6) { recommendationText = '<strong>INR 4.5 - 6:</strong> หยุดยา warfarin 1 วัน และลดขนาดยา warfarin ต่อสัปดาห์ 10%'; } 
+            else if (inrValue <= 9.4) { recommendationText = '<strong>INR 6.1 - 9.4:</strong> หยุดยา warfarin 1-2 วัน, ลดขนาดยา warfarin ต่อสัปดาห์ 20% และให้ Vitamin K 1-2.5 mg'; } 
+            else { recommendationText = '<strong>INR > 9.4:</strong> หยุดยา warfarin, ลดขนาดยา warfarin ต่อสัปดาห์ 20% และให้ Vitamin K 5-10 mg'; }
+        } else { recommendationText = 'ยังไม่มีคำแนะนำอัตโนมัติสำหรับเป้าหมายนี้'; }
+        recommendationDiv.innerHTML = `<p>${recommendationText}</p>`;
+    }
+    function getWeeklyTablets() {
+        const qty1 = parseFloat(dose1QtyInput.value) || 0;
+        const days1 = parseInt(dose1DaysSelect.value, 10) || 0;
+        const qty2 = parseFloat(dose2QtyInput.value) || 0;
+        const days2 = parseInt(dose2DaysSelect.value, 10) || 0;
+        return (qty1 * days1) + (qty2 * days2);
+    }
+    function getWeeklyMg() {
+        const strength = parseFloat(document.querySelector('input[name="tabletStrength"]:checked').value) || 0;
+        return strength * getWeeklyTablets();
+    }
+    function calculateDoseChange() {
+        const previousDose = parseFloat(previousDoseInput.value);
+        const newDose = getWeeklyMg();
+        doseChangePercentDiv.classList.remove('increase', 'decrease');
+        if (isNaN(previousDose) || previousDose <= 0) { doseChangePercentDiv.textContent = '- %'; return; }
+        const percentChange = ((newDose - previousDose) / previousDose) * 100;
+        if (percentChange > 0) { doseChangePercentDiv.textContent = `เพิ่มขึ้น ${percentChange.toFixed(2)} %`; doseChangePercentDiv.classList.add('increase'); } 
+        else if (percentChange < 0) { doseChangePercentDiv.textContent = `ลดลง ${Math.abs(percentChange).toFixed(2)} %`; doseChangePercentDiv.classList.add('decrease'); } 
+        else { doseChangePercentDiv.textContent = `ไม่เปลี่ยนแปลง 0.00 %`; }
+    }
+    function updateAllDoseCalculations() {
+        const weeklyMg = getWeeklyMg();
+        totalDoseResultDiv.textContent = `${formatNumber(weeklyMg)} mg/wk`;
+        calculateDoseChange();
+        calculateTotalTabletsNeeded();
+    }
+    function calculateTotalTabletsNeeded() {
+        const visitDate = new Date(visitDateInput.value);
+        const nextDate = new Date(nextAppointmentInput.value);
+        if (!visitDateInput.value || !nextAppointmentInput.value || nextDate < visitDate) {
+            appointmentDurationDiv.textContent = 'กรุณาเลือกวันที่ให้ถูกต้อง';
+            totalTabletsNeededDiv.textContent = '- เม็ด';
+            return;
+        }
+        const diffTime = nextDate.getTime() - visitDate.getTime();
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const weeks = Math.floor(diffDays / 7);
+        const remainingDays = diffDays % 7;
+        appointmentDurationDiv.textContent = `${weeks} สัปดาห์ ${remainingDays} วัน`;
+        const weeklyTablets = getWeeklyTablets();
+        if (weeklyTablets === 0) { totalTabletsNeededDiv.textContent = '0 เม็ด'; return; }
+        const avgTabletsPerDay = weeklyTablets / 7;
+        const totalTablets = avgTabletsPerDay * diffDays;
+        totalTabletsNeededDiv.textContent = `${Math.ceil(totalTablets)} เม็ด`;
+    }
+    function generateSummary() {
+        let summary = '========== สรุปข้อมูล Warfarin ==========\n';
+        let adherence = document.querySelector('input[name="medicationAdherence"]:checked').value;
+        if (adherence === 'ไม่ถูกต้อง') {
+            const reason = incorrectReasonTextarea.value.trim();
+            if (reason) { adherence += ` (เหตุผล: ${reason})`; }
+        }
+        summary += `ผู้ป่วยกินยา ${adherence}\n`;
+        const targetINRValue = document.querySelector('input[name="targetINR"]:checked').value;
+        const currentINRValue = currentINRInput.value || '-';
+        summary += `INR เป้าหมาย : ${targetINRValue}   INR วันนี้ : ${currentINRValue}\n`;
+        const recommendationText = recommendationDiv.textContent.trim();
+        summary += `คำแนะนำ: ${recommendationText}\n\n`;
+        summary += 'คำแนะนำการปรับยา\n';
+        summary += `การเปลี่ยนแปลง: ${doseChangePercentDiv.textContent}\n`;
+        const strengthText = document.querySelector('input[name="tabletStrength"]:checked').value + ' mg';
+        summary += `Warfarin ${strengthText}\n`;
+        const dose1DaysText = dose1DaysSelect.options[dose1DaysSelect.selectedIndex].text;
+        summary += `กิน ${dose1QtyInput.value} เม็ด ก่อนนอน ${dose1DaysText}\n`;
+        if (parseFloat(dose2QtyInput.value) > 0 && dose2DaysSelect.value !== '0') {
+            const dose2DaysText = dose2DaysSelect.options[dose2DaysSelect.selectedIndex].text;
+            summary += `และ กิน ${dose2QtyInput.value} เม็ด ก่อนนอน ${dose2DaysText}\n`;
+        }
+        const weeklyMg = getWeeklyMg();
+        summary += `ขนาดยา ${formatNumber(weeklyMg)} mg/wk\n`;
+        summary += `จำนวนยาที่ต้องใช้: ${totalTabletsNeededDiv.textContent}\n`;
+        let additionalActions = [];
+        if (stopMedCheckbox.checked && stopMedDays.value) {
+            additionalActions.push(`หยุดยา ${stopMedDays.value} วัน`);
+        }
+        if (vitKCheckbox.checked && vitKMg.value) {
+            additionalActions.push(`ให้ Vitamin K ${vitKMg.value} mg`);
+        }
+        if (additionalActions.length > 0) {
+            summary += `${additionalActions.join(' + ')}\n`;
+        }
+        summaryOutput.value = summary;
+        summarySection.style.display = 'block';
+    }
+
+    // (ใหม่) ฟังก์ชันสำหรับรีเซ็ตฟอร์ม
+    function resetForm() {
+        warfarinForm.reset();
+        summarySection.style.display = 'none';
+        incorrectDetailsDiv.style.display = 'none';
+        
+        const today = new Date().toISOString().split('T')[0];
+        visitDateInput.value = today;
+
+        updateRecommendation();
+        updateAllDoseCalculations();
+        
+        otherINRInput.disabled = true;
+        stopMedDays.disabled = true;
+        vitKMg.disabled = true;
+
+        window.scrollTo(0, 0);
+    }
+    
+    // --- Event Listeners ---
+    stopMedCheckbox.addEventListener('change', () => { stopMedDays.disabled = !stopMedCheckbox.checked; if (!stopMedCheckbox.checked) stopMedDays.value = ''; });
+    vitKCheckbox.addEventListener('change', () => { vitKMg.disabled = !vitKCheckbox.checked; if (!vitKCheckbox.checked) vitKMg.value = ''; });
+    copyButton.addEventListener('click', () => {
+        summaryOutput.select();
+        navigator.clipboard.writeText(summaryOutput.value).then(() => {
+            copyButton.textContent = 'คัดลอกแล้ว!';
+            setTimeout(() => { copyButton.textContent = 'คัดลอก'; }, 2000);
+        }).catch(err => { console.error('ไม่สามารถคัดลอกได้: ', err); });
+    });
+    currentINRInput.addEventListener('input', updateRecommendation);
+    targetINRRadios.forEach(radio => { radio.addEventListener('change', () => { otherINRInput.disabled = !otherINRRadio.checked; if (!otherINRRadio.checked) { otherINRInput.value = ''; } updateRecommendation(); }); });
+    medicationRadios.forEach(radio => { radio.addEventListener('change', (event) => { incorrectDetailsDiv.style.display = (event.target.value === 'ไม่ถูกต้อง') ? 'block' : 'none'; }); });
+    previousDoseInput.addEventListener('input', calculateDoseChange);
+    const doseInputs = [dose1QtyInput, dose1DaysSelect, dose2QtyInput, dose2DaysSelect];
+    strengthRadios.forEach(radio => radio.addEventListener('change', updateAllDoseCalculations));
+    doseInputs.forEach(input => { const eventType = (input.type === 'number') ? 'input' : 'change'; input.addEventListener(eventType, updateAllDoseCalculations); });
+    visitDateInput.addEventListener('change', calculateTotalTabletsNeeded);
+    nextAppointmentInput.addEventListener('change', calculateTotalTabletsNeeded);
+    getResultButton.addEventListener('click', generateSummary);
+    resetButton.addEventListener('click', resetForm); // (ใหม่)
+    document.addEventListener('DOMContentLoaded', () => { const today = new Date().toISOString().split('T')[0]; visitDateInput.value = today; updateRecommendation(); updateAllDoseCalculations(); });
+</script>
+
+</body>
+</html>
