@@ -186,7 +186,7 @@
         let recommendationText = 'กรุณากรอก INR วันนี้ให้ถูกต้อง';
         if (isNaN(inrValue)) { recommendationDiv.innerHTML = `<p>${recommendationText}</p>`; return; }
         if (targetRange === '2-3') {
-            if (inrValue < 1.5) { recommendationText = '<strong>INR < 1.5:</strong> เพิ่มขนาดยา warfarin ต่อ'; } 
+            if (inrValue < 1.5) { recommendationText = '<strong>INR < 1.5:</strong> เพิ่มขนาดยา warfarin ต่อสัปดาห์ 10 - 20%'; } 
             else if (inrValue <= 1.9) { recommendationText = '<strong>INR 1.5 - 1.9:</strong> เพิ่มขนาดยา warfarin ต่อสัปดาห์ 5-10%'; } 
             else if (inrValue <= 3) { recommendationText = '<strong>INR 2-3:</strong> ไม่ปรับเปลี่ยนขนาดยา warfarin'; } 
             else if (inrValue <= 3.9) { recommendationText = '<strong>INR 3.1- 3.9:</strong> ปรับลดขนาดยา warfarin ต่อสัปดาห์ 5-10%'; } 
