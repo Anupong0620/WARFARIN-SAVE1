@@ -386,33 +386,35 @@
     }
 
     // ---------- คำนวณจำนวนเม็ดจนถึงนัดถัดไป ----------
-    function calculateTotalTabletsNeeded(){
-      const visitDate = new Date(visitDateInput.value);
-      const nextDate = new Date(nextAppointmentInput.value);
+ function calculateTotalTabletsNeeded(){
+  const visitDate = new Date(visitDateInput.value);
+  const nextDate  = new Date(nextAppointmentInput.value);
 
-      if (!visitDateInput.value || !nextAppointmentInput.value || nextDate < visitDate){
-        appointmentDurationDiv.textContent = 'กรุณาเลือกวันที่ให้ถูกต้อง';
-        totalTabletsNeededDiv.textContent = '- เม็ด';
-        return;
-      }
+  if (!visitDateInput.value || !nextAppointmentInput.value || nextDate < visitDate){
+    appointmentDurationDiv.textContent = 'กรุณาเลือกวันที่ให้ถูกต้อง';
+    totalTabletsNeededDiv.textContent = '- เม็ด';
+    return;
+  }
 
-      // รวมวันแบบครอบคลุมวันเริ่ม (+1)
-      const diffTime = nextDate.getTime() - visitDate.getTime();
-      const diffDays = Math.round(diffTime / (1000*60*60*24)) + 1;
+  // รวมวันแบบครอบคลุมวันเริ่ม (+1)
+  const diffTime = nextDate.getTime() - visitDate.getTime();
+  const diffDays = Math.round(diffTime / (1000*60*60*24)) + 1;
 
-      const weeklyTablets = getWeeklyTablets();
-      const weeks = Math.floor(diffDays / 7);
-      const remainingDays = diffDays % 7;
+  const weeks         = Math.floor(diffDays / 7);
+  const remainingDays = diffDays % 7;
 
-      // เฉลี่ยตาม pattern ปัจจุบัน
-      const avgPerDay = weeklyTablets / 7;
-      const tabletsForRemain = Math.round(avgPerDay * remainingDays);
+  // ใช้จำนวนเม็ดยาต่อสัปดาห์จากข้อมูลด้านบน (คำนวณอัตโนมัติแล้ว)
+  const weeklyTablets = getWeeklyTablets();
 
-      const totalTabs = Math.round(weeks * weeklyTablets + tabletsForRemain);
+  // === สูตรที่คุณต้องการ ===
+  // รวมเป็นจำนวนเม็ด และปัดให้เป็นจำนวนเม็ดเต็ม
+  // (ถ้าต้องการเผื่อขาดเสมอให้เปลี่ยน Math.round -> Math.ceil)
+  const totalTabs = Math.round((weeklyTablets * weeks) + remainingDays);
 
-      appointmentDurationDiv.textContent = `${weeks} สัปดาห์ ${remainingDays} วัน`;
-      totalTabletsNeededDiv.textContent = `${totalTabs} เม็ด`;
-    }
+  appointmentDurationDiv.textContent = `${weeks} สัปดาห์ ${remainingDays} วัน`;
+  totalTabletsNeededDiv.textContent  = `${totalTabs} เม็ด`;
+}
+
 
     // ---------- สรุป ----------
     function generateSummary(){
