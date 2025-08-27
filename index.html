@@ -418,47 +418,57 @@
 
     // ---------- สรุป ----------
     function generateSummary(){
-      let summary = '========== สรุปข้อมูล Warfarin ==========\n';
-      let adherence = document.querySelector('input[name="medicationAdherence"]:checked').value;
-      if (adherence === 'ไม่ถูกต้อง'){
-        const reason = (incorrectReasonTextarea.value || '').trim();
-        if (reason) adherence += ` (เหตุผล: ${reason})`;
-      }
-      summary += `ผู้ป่วยกินยา ${adherence}\n`;
+  let summary = '========== สรุปข้อมูล Warfarin ==========\n';
+  let adherence = document.querySelector('input[name="medicationAdherence"]:checked').value;
+  if (adherence === 'ไม่ถูกต้อง'){
+    const reason = (document.getElementById('incorrectReason').value || '').trim();
+    if (reason) adherence += ` (เหตุผล: ${reason})`;
+  }
+  summary += `ผู้ป่วยกินยา ${adherence}\n`;
 
-      const targetINRValue = document.querySelector('input[name="targetINR"]:checked').value;
-      const currentINRValue = currentINRInput.value || '-';
-      summary += `INR เป้าหมาย : ${targetINRValue}   INR วันนี้ : ${currentINRValue}\n`;
+  const targetINRValue = document.querySelector('input[name="targetINR"]:checked').value;
+  const currentINRValue = document.getElementById('currentINR').value || '-';
+  summary += `INR เป้าหมาย : ${targetINRValue}   INR วันนี้ : ${currentINRValue}\n`;
 
-      summary += `คำแนะนำ: ${recommendationDiv.textContent.trim()}\n\n`;
-      summary += 'คำแนะนำการปรับยา\n';
-      summary += `การเปลี่ยนแปลง: ${doseChangePercentDiv.textContent}\n`;
+  summary += `คำแนะนำ: ${document.getElementById('recommendation').textContent.trim()}\n\n`;
+  summary += 'คำแนะนำการปรับยา\n';
+  summary += `การเปลี่ยนแปลง: ${document.getElementById('doseChangePercent').textContent}\n`;
 
-      const strengthText = document.querySelector('input[name="tabletStrength"]:checked').value + ' mg';
-      summary += `Warfarin ${strengthText}\n`;
+  const strengthText = document.querySelector('input[name="tabletStrength"]:checked').value + ' mg';
+  summary += `Warfarin ${strengthText}\n`;
 
-      const dose1DaysText = dose1DaysSelect.options[dose1DaysSelect.selectedIndex].text;
-      summary += `กิน ${dose1QtyInput.value} เม็ด ก่อนนอน ${dose1DaysText}\n`;
+  const dose1DaysText = document.getElementById('dose1_days')
+    .options[document.getElementById('dose1_days').selectedIndex].text;
+  summary += `กิน ${document.getElementById('dose1_qty').value} เม็ด ก่อนนอน ${dose1DaysText}\n`;
 
-      if ((parseFloat(dose2QtyInput.value) || 0) > 0 && dose2DaysSelect.value !== '0'){
-        const dose2DaysText = dose2DaysSelect.options[dose2DaysSelect.selectedIndex].text;
-        summary += `และ กิน ${dose2QtyInput.value} เม็ด ก่อนนอน ${dose2DaysText}\n`;
-      }
+  const dose2Qty = parseFloat(document.getElementById('dose2_qty').value) || 0;
+  const dose2DaysSel = document.getElementById('dose2_days');
+  if (dose2Qty > 0 && dose2DaysSel.value !== '0'){
+    const dose2DaysText = dose2DaysSel.options[dose2DaysSel.selectedIndex].text;
+    summary += `และ กิน ${dose2Qty} เม็ด ก่อนนอน ${dose2DaysText}\n`;
+  }
 
-      const weeklyTabs = getWeeklyTablets();
-      const weeklyMg = getWeeklyMg();
-      summary += `จำนวนเม็ดยา/สัปดาห์: ${formatNumber(weeklyTabs)} เม็ด\n`;
-      summary += `ขนาดยา ${formatNumber(weeklyMg)} mg/wk\n`;
-      summary += `จำนวนยาที่ต้องใช้: ${totalTabletsNeededDiv.textContent}\n`;
+  // === เปลี่ยนลำดับ: แสดง mg/wk ก่อน แล้วค่อยจำนวนเม็ด/สัปดาห์ ===
+  const weeklyMg   = getWeeklyMg();
+  const weeklyTabs = getWeeklyTablets();
+  summary += `ขนาดยา ${formatNumber(weeklyMg)} mg/wk\n`;
+  summary += `จำนวนเม็ดยา/สัปดาห์: ${formatNumber(weeklyTabs)} เม็ด\n`;
 
-      const extra = [];
-      if (stopMedCheckbox.checked && stopMedDays.value) extra.push(`หยุดยา ${stopMedDays.value} วัน`);
-      if (vitKCheckbox.checked && vitKMg.value) extra.push(`ให้ Vitamin K ${vitKMg.value} mg`);
-      if (extra.length) summary += `${extra.join(' + ')}\n`;
+  summary += `จำนวนยาที่ต้องใช้: ${document.getElementById('totalTabletsNeeded').textContent}\n`;
 
-      summaryOutput.value = summary;
-      summarySection.style.display = 'block';
-    }
+  const extra = [];
+  const stopMedCheckbox = document.getElementById('stopMedCheckbox');
+  const stopMedDays = document.getElementById('stopMedDays');
+  const vitKCheckbox = document.getElementById('vitKCheckbox');
+  const vitKMg = document.getElementById('vitKMg');
+
+  if (stopMedCheckbox.checked && stopMedDays.value) extra.push(`หยุดยา ${stopMedDays.value} วัน`);
+  if (vitKCheckbox.checked && vitKMg.value) extra.push(`ให้ Vitamin K ${vitKMg.value} mg`);
+  if (extra.length) summary += `${extra.join(' + ')}\n`;
+
+  document.getElementById('summaryOutput').value = summary;
+  document.getElementById('summarySection').style.display = 'block';
+}
 
     // ---------- รีเซ็ต ----------
     function resetForm(){
