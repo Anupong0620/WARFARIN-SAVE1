@@ -8,126 +8,72 @@
 
   <style>
     :root{
-      --bg:#f4f7f6;
-      --card:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --primary:#0056b3;
-      --success:#28a745;
-      --danger:#dc3545;
-      --border:#e5e7eb;
-      --shadow:0 8px 22px rgba(0,0,0,0.08);
-      --radius:14px;
+      --bg:#f4f7f6; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+      --primary:#0056b3; --success:#28a745; --danger:#dc3545; --border:#e5e7eb;
+      --shadow:0 8px 22px rgba(0,0,0,0.08); --radius:14px;
     }
 
     *{box-sizing:border-box}
-    html,body{
-      margin:0; padding:0; background:var(--bg); color:var(--text);
-      font-family:'Sarabun',system-ui,Segoe UI,Roboto,Arial,"Noto Sans Thai",sans-serif
-    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Sarabun',system-ui,Segoe UI,Roboto,Arial,"Noto Sans Thai",sans-serif}
 
-    /* แถบลิงก์บนสุด (sticky) */
-    .topbar{
-      position: sticky; top: 0; z-index: 50;
-      background: linear-gradient(180deg, #f4f7f6 90%, rgba(244,247,246,0));
-      padding: 16px 12px 8px; display:flex; justify-content:center;
-    }
-    .link-btn{
-      display:inline-flex; align-items:center; gap:10px;
-      background:var(--success); color:#fff; font-weight:700;
-      padding:10px 18px; border-radius:10px; text-decoration:none;
-      box-shadow:0 6px 14px rgba(40,167,69,0.25);
-      transition: transform .06s ease, filter .2s ease;
-    }
-    .link-btn:hover{ filter:brightness(0.95); }
-    .link-btn:active{ transform:translateY(1px); }
+    .topbar{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#f4f7f6 90%,rgba(244,247,246,0));padding:16px 12px 8px;display:flex;justify-content:center}
+    .link-btn{display:inline-flex;align-items:center;gap:10px;background:var(--success);color:#fff;font-weight:700;padding:10px 18px;border-radius:10px;text-decoration:none;box-shadow:0 6px 14px rgba(40,167,69,.25);transition:transform .06s ease,filter .2s ease}
+    .link-btn:hover{filter:brightness(.95)} .link-btn:active{transform:translateY(1px)}
 
-    .wrap{max-width: 860px; margin: 0 auto; padding: 0 14px 28px;}
-    .container{
-      width:100%; background:var(--card); border-radius: var(--radius);
-      box-shadow: var(--shadow); padding: 26px; margin-top: 6px;
-    }
+    .wrap{max-width:860px;margin:0 auto;padding:0 14px 28px}
+    .container{width:100%;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin-top:6px}
 
-    h1{
-      color:var(--primary); text-align:center; font-size: clamp(22px,2.6vw,32px);
-      margin: 8px 0 18px; display:flex; align-items:center; justify-content:center; gap:10px;
-    }
+    h1{color:var(--primary);text-align:center;font-size:clamp(22px,2.6vw,32px);margin:8px 0 18px;display:flex;align-items:center;justify-content:center;gap:10px}
 
-    fieldset{border:1px solid var(--border); border-radius:10px; padding:16px; margin: 18px 0;}
-    legend{font-weight:700; color:#374151; padding:0 8px}
-    label{display:block; margin-bottom:8px; font-weight:600; color:#374151}
-    .help{color:var(--muted); font-size:.95rem}
+    fieldset{border:1px solid var(--border);border-radius:10px;padding:16px;margin:18px 0}
+    legend{font-weight:700;color:#374151;padding:0 8px}
+    label{display:block;margin-bottom:8px;font-weight:600;color:#374151}
+    .help{color:var(--muted);font-size:.95rem}
 
-    input[type="date"], input[type="number"], input[type="text"], select, textarea{
-      width:100%; padding:11px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;
-      outline:none; transition: box-shadow .15s ease, border-color .15s ease; background:#fff;
-    }
+    input[type="date"],input[type="number"],input[type="text"],select,textarea{
+      width:100%;padding:11px 12px;border:1px solid #d1d5db;border-radius:10px;font-size:1rem;outline:none;transition:box-shadow .15s,border-color .15s;background:#fff}
     textarea{resize:vertical}
-    input:focus, select:focus, textarea:focus{ border-color:#93c5fd; box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+    input:focus,select:focus,textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
 
-    .date-row{display:grid; grid-template-columns: 1fr; gap:14px}
-    @media (min-width: 680px){ .date-row{ grid-template-columns: 1fr 1fr; } }
+    .date-row{display:grid;grid-template-columns:1fr;gap:14px}
+    @media (min-width:680px){.date-row{grid-template-columns:1fr 1fr}}
 
-    .radio-group{display:flex; flex-wrap:wrap; gap:14px}
-    .radio-group label{display:inline-flex; align-items:center; gap:8px; font-weight:500; margin:0}
+    .radio-group{display:flex;flex-wrap:wrap;gap:14px}
+    .radio-group label{display:inline-flex;align-items:center;gap:8px;font-weight:500;margin:0}
 
-    .inline-controls{display:flex; flex-wrap:wrap; gap:22px; align-items:end}
-    .inline-controls .control-item{display:flex; align-items:center; gap:8px}
+    .inline-controls{display:flex;flex-wrap:wrap;gap:22px;align-items:end}
+    .inline-controls .control-item{display:flex;align-items:center;gap:8px}
     .inline-controls input[type="number"]{width:90px}
 
-    /* ====== แก้ปัญหา "บรรทัดซ้อน" ของขนาดยาแนะนำ ====== */
-    .dose-line{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap: nowrap;          /* ให้อยู่บรรทัดเดียวบนจอกว้าง */
+    /* --- dose line: ไม่ซ้อนบรรทัดบนจอกว้าง --- */
+    .dose-line{display:flex;align-items:center;gap:10px;flex-wrap:nowrap}
+    .dose-line span{white-space:nowrap}
+    .dose-line input[type="number"]{width:90px;flex:0 0 90px}
+    .dose-line select{flex:0 0 auto;width:auto;max-width:100%;min-width:210px}
+    @media (max-width:640px){
+      .dose-line{flex-wrap:wrap}
+      .dose-line select{min-width:180px}
     }
-    .dose-line span{ white-space:nowrap; } /* ข้อความไม่ตัดคำกลางประโยค */
-    .dose-line input[type="number"]{
-      width:90px; flex:0 0 90px;  /* ช่องตัวเลขคงที่ ไม่ดันอย่างอื่น */
-    }
-    .dose-line select{
-      flex:0 0 auto;
-      width:auto; max-width:100%; min-width:210px;  /* ให้พอดี ไม่กินพื้นที่จนตกล่าง */
-    }
-    /* จอแคบค่อยยอมตัดบรรทัด */
-    @media (max-width: 640px){
-      .dose-line{ flex-wrap:wrap; }
-      .dose-line select{ min-width:180px; }
-    }
-    /* =============================================== */
 
     #incorrect-details{display:none}
+    #recommendation{margin-top:10px;padding:14px;background:#e9f7ef;border-left:6px solid var(--success);border-radius:10px;min-height:50px;color:#065f46;font-weight:600}
 
-    #recommendation{
-      margin-top:10px; padding:14px; background:#e9f7ef; border-left:6px solid var(--success);
-      border-radius:10px; min-height:50px; color:#065f46; font-weight:600
-    }
-
-    .dose-results{display:grid; grid-template-columns:1fr; gap:14px}
-    @media (min-width: 680px){ .dose-results{ grid-template-columns:1fr 1fr; } }
-    .result-card{padding:12px 14px; border:1px dashed var(--border); border-radius:10px; background:#fafafa}
-    .result-card strong{color:var(--primary); font-size:1.1rem}
+    /* การ์ดผลลัพธ์: ปรับเป็น auto-fit 3 คอลัมน์ได้ */
+    .dose-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+    .result-card{padding:12px 14px;border:1px dashed var(--border);border-radius:10px;background:#fafafa}
+    .result-card strong{color:var(--primary);font-size:1.1rem}
     #doseChangePercent.increase{color:#15803d}
     #doseChangePercent.decrease{color:#b91c1c}
 
-    .button-group{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; cursor:pointer;
-      padding:12px 12px; border-radius:10px; font-weight:700; font-size:1.05rem; color:#fff;
-      transition: filter .15s ease, transform .06s ease;
-    }
+    .button-group{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;padding:12px;border-radius:10px;font-weight:700;font-size:1.05rem;color:#fff;transition:filter .15s,transform .06s}
     .btn:active{transform:translateY(1px)}
-    #getResultButton{background:#007bff}
-    #getResultButton:hover{filter:brightness(.95)}
-    #resetButton{background:var(--danger)}
-    #resetButton:hover{filter:brightness(.95)}
+    #getResultButton{background:#007bff} #getResultButton:hover{filter:brightness(.95)}
+    #resetButton{background:var(--danger)} #resetButton:hover{filter:brightness(.95)}
 
-    #summarySection{display:none; margin-top: 16px}
-    #summaryHeader{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
-    #copyButton{
-      padding:8px 14px; font-size:.95rem; background:#6c757d; color:white; border:none; border-radius:10px; cursor:pointer
-    }
+    #summarySection{display:none;margin-top:16px}
+    #summaryHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    #copyButton{padding:8px 14px;font-size:.95rem;background:#6c757d;color:#fff;border:none;border-radius:10px;cursor:pointer}
     #copyButton:hover{filter:brightness(.95)}
   </style>
 </head>
@@ -254,7 +200,7 @@
             <span>เม็ด ก่อนนอน</span>
             <select id="dose2_days">
               <option value="0">- (ไม่แสดงผล)</option>
-              <option value="4" selected>วันที่เหลือ</option>
+              <option value="rest" selected>วันที่เหลือ</option>
               <option value="2">เสาร์ - อาทิตย์</option>
               <option value="1">อาทิตย์</option>
             </select>
@@ -264,6 +210,10 @@
             <div class="result-card">
               <div><strong>ขนาดยาทั้งหมดต่อสัปดาห์</strong></div>
               <div id="totalDoseResult">0 mg/wk</div>
+            </div>
+            <div class="result-card">
+              <div><strong>จำนวนเม็ดยาต่อสัปดาห์</strong></div>
+              <div id="weeklyTabletsResult">- เม็ด/สัปดาห์</div>
             </div>
             <div class="result-card">
               <div><strong>การเปลี่ยนแปลงขนาดยา</strong></div>
@@ -332,6 +282,7 @@
     const dose2DaysSelect = document.getElementById('dose2_days');
 
     const totalDoseResultDiv = document.getElementById('totalDoseResult');
+    const weeklyTabletsResultDiv = document.getElementById('weeklyTabletsResult');
     const doseChangePercentDiv = document.getElementById('doseChangePercent');
     const appointmentDurationDiv = document.getElementById('appointmentDuration');
     const totalTabletsNeededDiv = document.getElementById('totalTabletsNeeded');
@@ -351,10 +302,7 @@
       const targetRange = document.querySelector('input[name="targetINR"]:checked').value;
       let text = 'กรุณากรอก INR วันนี้ให้ถูกต้อง';
 
-      if (isNaN(inrValue)){
-        recommendationDiv.innerHTML = `<p>${text}</p>`;
-        return;
-      }
+      if (isNaN(inrValue)){ recommendationDiv.innerHTML = `<p>${text}</p>`; return; }
 
       if (targetRange === '2-3'){
         if (inrValue < 1.5) text = '<strong>INR &lt; 1.5:</strong> เพิ่มขนาดยา warfarin ต่อสัปดาห์ 10–20%';
@@ -381,15 +329,26 @@
     // ---------- การคำนวณโดส ----------
     function getWeeklyTablets(){
       const q1 = parseFloat(dose1QtyInput.value) || 0;
-      const d1 = parseInt(dose1DaysSelect.value,10) || 0;
+      const d1 = parseInt(dose1DaysSelect.value,10) || 0; // จำนวนวันของโดสที่ 1
+
       const q2 = parseFloat(dose2QtyInput.value) || 0;
-      const d2 = parseInt(dose2DaysSelect.value,10) || 0;
-      return (q1*d1) + (q2*d2);
+      let d2; // จำนวนวันของโดสที่ 2
+
+      const dose2Val = dose2DaysSelect.value;
+      if (dose2Val === 'rest'){
+        d2 = Math.max(0, 7 - d1);        // วันที่เหลือ = 7 - วันของโดสแรก
+      } else {
+        d2 = parseInt(dose2Val,10) || 0; // ตัวเลือกระบุวันไว้ชัดเจน (เช่น 2 วัน, 1 วัน)
+      }
+
+      return (q1 * d1) + (q2 * d2);
     }
+
     function getWeeklyMg(){
       const strength = parseFloat(document.querySelector('input[name="tabletStrength"]:checked').value) || 0;
       return strength * getWeeklyTablets();
     }
+
     function calculateDoseChange(){
       const prev = parseFloat(previousDoseInput.value);
       const now = getWeeklyMg();
@@ -402,9 +361,14 @@
       else if (pct < 0){ doseChangePercentDiv.textContent = `ลดลง ${Math.abs(pct).toFixed(2)} %`; doseChangePercentDiv.classList.add('decrease'); }
       else { doseChangePercentDiv.textContent='ไม่เปลี่ยนแปลง 0.00 %'; }
     }
+
     function updateAllDoseCalculations(){
+      const weeklyTabs = getWeeklyTablets();
+      weeklyTabletsResultDiv.textContent = `${formatNumber(weeklyTabs)} เม็ด/สัปดาห์`;
+
       const weeklyMg = getWeeklyMg();
       totalDoseResultDiv.textContent = `${formatNumber(weeklyMg)} mg/wk`;
+
       calculateDoseChange();
       calculateTotalTabletsNeeded();
     }
@@ -420,7 +384,7 @@
         return;
       }
 
-      // รวมวันแบบครอบคลุมวันเริ่มด้วย (+1)
+      // รวมวันแบบครอบคลุมวันเริ่ม (+1)
       const diffTime = nextDate.getTime() - visitDate.getTime();
       const diffDays = Math.round(diffTime / (1000*60*60*24)) + 1;
 
@@ -428,7 +392,7 @@
       const weeks = Math.floor(diffDays / 7);
       const remainingDays = diffDays % 7;
 
-      // ค่าเฉลี่ย/วันสำหรับวันที่เหลือ (ยืดหยุ่นกับทุกแพทเทิร์น)
+      // เฉลี่ยตาม pattern ปัจจุบัน
       const avgPerDay = weeklyTablets / 7;
       const tabletsForRemain = Math.round(avgPerDay * remainingDays);
 
@@ -467,7 +431,9 @@
         summary += `และ กิน ${dose2QtyInput.value} เม็ด ก่อนนอน ${dose2DaysText}\n`;
       }
 
+      const weeklyTabs = getWeeklyTablets();
       const weeklyMg = getWeeklyMg();
+      summary += `จำนวนเม็ดยา/สัปดาห์: ${formatNumber(weeklyTabs)} เม็ด\n`;
       summary += `ขนาดยา ${formatNumber(weeklyMg)} mg/wk\n`;
       summary += `จำนวนยาที่ต้องใช้: ${totalTabletsNeededDiv.textContent}\n`;
 
@@ -496,17 +462,11 @@
     }
 
     // ---------- Events ----------
-    stopMedCheckbox.addEventListener('change', () => {
-      stopMedDays.disabled = !stopMedCheckbox.checked; if(!stopMedCheckbox.checked) stopMedDays.value='';
-    });
-    vitKCheckbox.addEventListener('change', () => {
-      vitKMg.disabled = !vitKCheckbox.checked; if(!vitKCheckbox.checked) vitKMg.value='';
-    });
+    stopMedCheckbox.addEventListener('change', () => { stopMedDays.disabled = !stopMedCheckbox.checked; if(!stopMedCheckbox.checked) stopMedDays.value=''; });
+    vitKCheckbox.addEventListener('change', () => { vitKMg.disabled = !vitKCheckbox.checked; if(!vitKCheckbox.checked) vitKMg.value=''; });
     copyButton.addEventListener('click', () => {
       summaryOutput.select();
-      navigator.clipboard.writeText(summaryOutput.value)
-        .then(()=>{ copyButton.textContent='คัดลอกแล้ว!'; setTimeout(()=>copyButton.textContent='คัดลอก',1500); })
-        .catch(()=>{ alert('คัดลอกไม่สำเร็จ'); });
+      navigator.clipboard.writeText(summaryOutput.value).then(()=>{ copyButton.textContent='คัดลอกแล้ว!'; setTimeout(()=>copyButton.textContent='คัดลอก',1500); }).catch(()=>{ alert('คัดลอกไม่สำเร็จ'); });
     });
 
     currentINRInput.addEventListener('input', updateRecommendation);
@@ -516,18 +476,13 @@
       if (!useOther) otherINRInput.value='';
       updateRecommendation();
     }));
-    medicationRadios.forEach(r => r.addEventListener('change', (e)=>{
-      incorrectDetailsDiv.style.display = (e.target.value === 'ไม่ถูกต้อง') ? 'block' : 'none';
-    }));
+    medicationRadios.forEach(r => r.addEventListener('change', (e)=>{ incorrectDetailsDiv.style.display = (e.target.value === 'ไม่ถูกต้อง') ? 'block' : 'none'; }));
     previousDoseInput.addEventListener('input', calculateDoseChange);
 
     // โดส/สัปดาห์
     const doseInputs = [dose1QtyInput, dose1DaysSelect, dose2QtyInput, dose2DaysSelect];
     strengthRadios.forEach(r => r.addEventListener('change', updateAllDoseCalculations));
-    doseInputs.forEach(el => {
-      const ev = (el.tagName === 'SELECT') ? 'change' : 'input';
-      el.addEventListener(ev, updateAllDoseCalculations);
-    });
+    doseInputs.forEach(el => { const ev = (el.tagName === 'SELECT') ? 'change' : 'input'; el.addEventListener(ev, updateAllDoseCalculations); });
 
     visitDateInput.addEventListener('change', calculateTotalTabletsNeeded);
     nextAppointmentInput.addEventListener('change', calculateTotalTabletsNeeded);
