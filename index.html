@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Warfarin Save</title>
-  <!-- ฟอนต์ไทยอ่านง่าย -->
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 
   <style>
@@ -21,20 +20,17 @@
       --radius:14px;
     }
 
-    /* หน้าเว็บรวม */
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Sarabun',system-ui,Segoe UI,Roboto,Arial,"Noto Sans Thai",sans-serif}
-    a{color:inherit}
+    html,body{
+      margin:0; padding:0; background:var(--bg); color:var(--text);
+      font-family:'Sarabun',system-ui,Segoe UI,Roboto,Arial,"Noto Sans Thai",sans-serif
+    }
 
     /* แถบลิงก์บนสุด (sticky) */
     .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      position: sticky; top: 0; z-index: 50;
       background: linear-gradient(180deg, #f4f7f6 90%, rgba(244,247,246,0));
-      padding: 16px 12px 8px;
-      display:flex;
-      justify-content:center;
+      padding: 16px 12px 8px; display:flex; justify-content:center;
     }
     .link-btn{
       display:inline-flex; align-items:center; gap:10px;
@@ -46,7 +42,6 @@
     .link-btn:hover{ filter:brightness(0.95); }
     .link-btn:active{ transform:translateY(1px); }
 
-    /* กล่องเนื้อหา */
     .wrap{max-width: 860px; margin: 0 auto; padding: 0 14px 28px;}
     .container{
       width:100%; background:var(--card); border-radius: var(--radius);
@@ -60,7 +55,6 @@
 
     fieldset{border:1px solid var(--border); border-radius:10px; padding:16px; margin: 18px 0;}
     legend{font-weight:700; color:#374151; padding:0 8px}
-
     label{display:block; margin-bottom:8px; font-weight:600; color:#374151}
     .help{color:var(--muted); font-size:.95rem}
 
@@ -76,13 +70,32 @@
 
     .radio-group{display:flex; flex-wrap:wrap; gap:14px}
     .radio-group label{display:inline-flex; align-items:center; gap:8px; font-weight:500; margin:0}
+
     .inline-controls{display:flex; flex-wrap:wrap; gap:22px; align-items:end}
     .inline-controls .control-item{display:flex; align-items:center; gap:8px}
     .inline-controls input[type="number"]{width:90px}
 
-    .dose-line{display:flex; flex-wrap:wrap; align-items:center; gap:10px}
-    .dose-line input[type="number"]{width:90px}
-    .dose-line select{min-width:210px}
+    /* ====== แก้ปัญหา "บรรทัดซ้อน" ของขนาดยาแนะนำ ====== */
+    .dose-line{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap: nowrap;          /* ให้อยู่บรรทัดเดียวบนจอกว้าง */
+    }
+    .dose-line span{ white-space:nowrap; } /* ข้อความไม่ตัดคำกลางประโยค */
+    .dose-line input[type="number"]{
+      width:90px; flex:0 0 90px;  /* ช่องตัวเลขคงที่ ไม่ดันอย่างอื่น */
+    }
+    .dose-line select{
+      flex:0 0 auto;
+      width:auto; max-width:100%; min-width:210px;  /* ให้พอดี ไม่กินพื้นที่จนตกล่าง */
+    }
+    /* จอแคบค่อยยอมตัดบรรทัด */
+    @media (max-width: 640px){
+      .dose-line{ flex-wrap:wrap; }
+      .dose-line select{ min-width:180px; }
+    }
+    /* =============================================== */
 
     #incorrect-details{display:none}
 
@@ -119,7 +132,7 @@
   </style>
 </head>
 <body>
-  <!-- ปุ่มลิงก์บนสุด (ไม่ชน/ซ้อนตัวกล่อง) -->
+  <!-- ปุ่มลิงก์บนสุด -->
   <div class="topbar">
     <a class="link-btn" href="http://thaiacc.org/warfarin/program2/#/" target="_blank" rel="noopener">
       🌐 เปิดโปรแกรม Warfarin Online
@@ -128,7 +141,7 @@
 
   <div class="wrap">
     <div class="container">
-      <h1>Warfarin Save <span>📝</span></h1>
+      <h1>Warfarin Save 📝</h1>
 
       <form id="warfarinForm" onsubmit="return false;">
         <!-- ข้อมูลการนัดหมาย -->
@@ -221,6 +234,7 @@
             </div>
           </div>
 
+          <!-- บรรทัดโดสที่ 1 -->
           <div class="form-group dose-line">
             <span>กินครั้งละ</span>
             <input type="number" id="dose1_qty" value="1" step="0.5">
@@ -233,6 +247,7 @@
             </select>
           </div>
 
+          <!-- บรรทัดโดสที่ 2 -->
           <div class="form-group dose-line">
             <span>กินครั้งละ</span>
             <input type="number" id="dose2_qty" value="0.5" step="0.5">
@@ -328,9 +343,7 @@
     const copyButton = document.getElementById('copyButton');
 
     // ---------- Helper ----------
-    function formatNumber(num){
-      return (num % 1 === 0) ? String(num) : num.toFixed(1);
-    }
+    function formatNumber(num){ return (num % 1 === 0) ? String(num) : num.toFixed(1); }
 
     // ---------- คำแนะนำตาม INR ----------
     function updateRecommendation(){
@@ -415,7 +428,7 @@
       const weeks = Math.floor(diffDays / 7);
       const remainingDays = diffDays % 7;
 
-      // คิดเป็นค่าเฉลี่ย/วัน สำหรับวันที่เหลือ (วิธีทั่วไปและยืดหยุ่น)
+      // ค่าเฉลี่ย/วันสำหรับวันที่เหลือ (ยืดหยุ่นกับทุกแพทเทิร์น)
       const avgPerDay = weeklyTablets / 7;
       const tabletsForRemain = Math.round(avgPerDay * remainingDays);
 
