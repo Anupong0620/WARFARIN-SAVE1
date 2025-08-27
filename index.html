@@ -75,6 +75,18 @@
     #summaryHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
     #copyButton{padding:8px 14px;font-size:.95rem;background:#6c757d;color:#fff;border:none;border-radius:10px;cursor:pointer}
     #copyButton:hover{filter:brightness(.95)}
+
+    /* --- แยกบรรทัดเฉพาะบริเวณโดส กับการ์ดผลลัพธ์ --- */
+    /* เพิ่มช่องว่างเฉพาะ .dose-line ตัวสุดท้ายก่อนผลลัพธ์ */
+    fieldset .dose-line:last-of-type {
+    margin-bottom: 14px;     /* ระยะห่างก่อนเริ่มการ์ดผลลัพธ์ */
+}
+
+/* เผื่อบางธีม margin-collapse ให้ยกการ์ดลงอีกนิด */
+.dose-line + .dose-results {
+  margin-top: 6px;
+}
+
   </style>
 </head>
 <body>
